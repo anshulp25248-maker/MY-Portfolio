@@ -10,14 +10,23 @@ const fade = {
   animate: { opacity: 1, y: 0 },
 };
 
+const statColors = ["#2563EB", "#16A34A", "#7C3AED", "#D97706", "#DC2626", "#0F766E", "#9333EA", "#0891B2"];
+
 export function About() {
   return (
     <div className="space-y-8">
       <SectionHero eyebrow="About Me" title={about.heading} body={about.opening} accent="#2563EB" />
       <div className="grid gap-4 md:grid-cols-4">
         {about.stats.map(([label, value], index) => (
-          <motion.article key={label} className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-soft" {...fade} transition={{ delay: index * 0.03 }}>
-            <strong className="block text-4xl font-black text-slate-950">{value}</strong>
+          <motion.article
+            key={label}
+            className="relative overflow-hidden rounded-2xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-soft"
+            style={{ borderColor: `${statColors[index]}26`, background: `linear-gradient(135deg, ${statColors[index]}12, #ffffff)` }}
+            {...fade}
+            transition={{ delay: index * 0.03 }}
+          >
+            <span className="absolute -right-6 -top-8 h-20 w-20 rounded-full" style={{ background: `${statColors[index]}18` }} />
+            <strong className="relative block text-4xl font-black" style={{ color: statColors[index] }}>{value}</strong>
             <span className="mt-2 block text-sm leading-6 text-slate-500">{label}</span>
           </motion.article>
         ))}
@@ -71,7 +80,7 @@ export function Experience() {
       <SectionHero eyebrow="My Experience" title={experience.heading} body="A detailed record of investment research, Green Flow Ventures strategic work, municipal operations leadership, and voluntary teaching." accent="#16A34A" />
       <div className="space-y-5">
         {experience.roles.map((role, index) => (
-          <motion.article key={role.title} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lift" {...fade} transition={{ delay: index * 0.05 }}>
+          <motion.article key={role.title} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lift" style={{ borderLeft: "6px solid #16A34A" }} {...fade} transition={{ delay: index * 0.05 }}>
             <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
               <div>
                 <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-green-700">{role.type}</span>
@@ -80,7 +89,7 @@ export function Experience() {
               </div>
               <span className="rounded-full border border-slate-200 px-3 py-2 text-xs font-black text-slate-500">{role.period}</span>
             </div>
-            <p className="text-justify text-sm leading-8 text-slate-600">{role.description}</p>
+            <p className="text-pretty text-[15px] leading-8 text-slate-600">{role.description}</p>
             <ul className="mt-5 grid gap-3">
               {role.bullets.map((bullet) => <li key={bullet} className="rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-700">{bullet}</li>)}
             </ul>
@@ -95,6 +104,28 @@ export function College() {
   return (
     <div className="space-y-8">
       <SectionHero eyebrow="My College" title={college.heading} body={college.description} accent="#7C3AED" />
+      <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <Card>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">Campus Identity</p>
+          <h3 className="mt-3 text-3xl font-black text-slate-950">IIM Tiruchirappalli</h3>
+          <p className="mt-4 text-pretty text-[15px] leading-8 text-slate-600">
+            Upload your own college photograph from the drawer and it will appear here as the featured visual for this section.
+            This keeps the page personal, recruiter-friendly, and visually grounded in your MBA journey.
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <span className="rounded-2xl bg-violet-50 p-4 text-sm font-bold text-violet-700">MBA / PGPM 2025-27</span>
+            <span className="rounded-2xl bg-blue-50 p-4 text-sm font-bold text-blue-700">Finance Focus</span>
+            <span className="rounded-2xl bg-emerald-50 p-4 text-sm font-bold text-emerald-700">Research Portfolio</span>
+            <span className="rounded-2xl bg-amber-50 p-4 text-sm font-bold text-amber-700">Capital Markets</span>
+          </div>
+        </Card>
+        <div className="college-photo-panel">
+          <div className="college-photo-overlay">
+            <p>IIM Trichy</p>
+            <span>Upload college photo from Portfolio Menu</span>
+          </div>
+        </div>
+      </div>
       <Card>
         <h3 className="mb-5 flex items-center gap-2 text-xl font-black"><GraduationCap className="text-violet-600" /> Key Activities at IIM Trichy</h3>
         <div className="grid gap-3 md:grid-cols-2">
@@ -138,7 +169,7 @@ export function Works() {
                   </div>
                   <ChevronDown className={`mt-2 text-amber-600 transition ${expanded ? "rotate-180" : ""}`} />
                 </button>
-                <p className="mt-4 text-justify text-sm leading-8 text-slate-600">{paper.summary}</p>
+                <p className="mt-4 text-pretty text-[15px] leading-8 text-slate-600">{paper.summary}</p>
                 {expanded && (
                   <motion.div className="mt-5 space-y-3" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}>
                     {paper.findings.map((finding) => <div key={finding} className="rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-700">{finding}</div>)}
@@ -166,7 +197,7 @@ export function Vision() {
   return (
     <div className="space-y-8">
       <SectionHero eyebrow="Vision & Aspirations" title={vision.heading} body={vision.opening} accent="#DC2626" />
-      <Card><p className="border-l-4 border-red-600 pl-5 text-justify text-xl font-semibold leading-10 text-slate-800">{vision.statement}</p></Card>
+      <Card><p className="border-l-4 border-red-600 pl-5 text-pretty text-xl font-semibold leading-10 text-slate-800">{vision.statement}</p></Card>
       <Card>
         <h3 className="mb-6 text-xl font-black">5-Year Roadmap</h3>
         <div className="grid gap-4">
@@ -196,7 +227,7 @@ export function Projects() {
           <Card key={project.title}>
             <span className="rounded-full bg-teal-50 px-3 py-1 text-xs font-black text-teal-700">{project.status}</span>
             <h3 className="mt-4 text-2xl font-black">{project.title}</h3>
-            <p className="mt-3 text-justify text-sm leading-8 text-slate-600">{project.description}</p>
+            <p className="mt-3 text-pretty text-[15px] leading-8 text-slate-600">{project.description}</p>
             <div className="mt-4 flex flex-wrap gap-2">{project.tech.map((tech) => <span key={tech} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">{tech}</span>)}</div>
             <a href={project.url} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-teal-700 px-4 py-3 text-sm font-black text-white"><ExternalLink size={16} /> Open Project</a>
           </Card>
@@ -238,10 +269,15 @@ export function Blog() {
 
 function SectionHero({ eyebrow, title, body, accent }: { eyebrow: string; title: string; body: string; accent: string }) {
   return (
-    <motion.div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-soft" {...fade}>
+    <motion.div
+      className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-7 shadow-soft"
+      style={{ background: `linear-gradient(135deg, ${withAlpha(accent, 0.1)}, #ffffff 42%, #ffffff)` }}
+      {...fade}
+    >
+      <span className="absolute -right-10 -top-12 h-36 w-36 rounded-full" style={{ background: withAlpha(accent, 0.14) }} />
       <p className="text-xs font-black uppercase tracking-[0.18em]" style={{ color: accent }}>{eyebrow}</p>
       <h2 className="mt-3 font-display text-4xl font-black leading-tight text-slate-950 md:text-6xl">{title}</h2>
-      <p className="mt-5 max-w-5xl text-justify text-base leading-9 text-slate-600">{body}</p>
+      <p className="mt-5 max-w-4xl text-pretty text-[17px] font-medium leading-9 text-slate-700">{body}</p>
     </motion.div>
   );
 }
@@ -255,9 +291,17 @@ function SubTitle({ icon, title }: { icon: React.ReactNode; title: string }) {
 }
 
 function GridItems({ items }: { items: string[][]; accent: string }) {
-  return <div className="grid gap-5 md:grid-cols-2">{items.map(([name, platform, year, description]) => <Card key={name}><span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">{year}</span><h4 className="mt-4 text-xl font-black">{name}</h4><p className="mt-1 text-sm font-bold text-amber-700">{platform}</p><p className="mt-3 text-justify text-sm leading-8 text-slate-600">{description}</p></Card>)}</div>;
+  return <div className="grid gap-5 md:grid-cols-2">{items.map(([name, platform, year, description]) => <Card key={name}><span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">{year}</span><h4 className="mt-4 text-xl font-black">{name}</h4><p className="mt-1 text-sm font-bold text-amber-700">{platform}</p><p className="mt-3 text-pretty text-[15px] leading-8 text-slate-600">{description}</p></Card>)}</div>;
 }
 
 function ListCard({ title, items }: { title: string; items: string[] }) {
   return <Card><h3 className="mb-4 text-xl font-black">{title}</h3><ul className="space-y-3">{items.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-700">{item}</li>)}</ul></Card>;
+}
+
+function withAlpha(hex: string, alpha: number) {
+  const clean = hex.replace("#", "");
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }

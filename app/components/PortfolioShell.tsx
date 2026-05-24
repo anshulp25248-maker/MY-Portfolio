@@ -32,18 +32,18 @@ import { ChangeEvent, type CSSProperties, ReactNode, useEffect, useMemo, useStat
 import { accents, profile } from "../data/portfolioContent";
 
 const professionalTabs = [
-  { href: "/about", label: "About Me", icon: UserRound, accent: accents.about },
-  { href: "/experience", label: "Experience", icon: BriefcaseBusiness, accent: accents.experience },
-  { href: "/college", label: "College", icon: GraduationCap, accent: accents.college },
-  { href: "/works", label: "My Works", icon: BookOpen, accent: accents.works },
-  { href: "/vision", label: "Vision", icon: Rocket, accent: accents.vision },
-  { href: "/projects", label: "Projects & Apps", icon: Search, accent: accents.projects },
+  { href: "/about", label: "About Me", desc: "Bio, stats, skills", icon: UserRound, accent: accents.about },
+  { href: "/experience", label: "Experience", desc: "Roles and impact", icon: BriefcaseBusiness, accent: accents.experience },
+  { href: "/college", label: "College", desc: "IIM Trichy journey", icon: GraduationCap, accent: accents.college },
+  { href: "/works", label: "My Works", desc: "Papers and models", icon: BookOpen, accent: accents.works },
+  { href: "/vision", label: "Vision", desc: "Roadmap and beliefs", icon: Rocket, accent: accents.vision },
+  { href: "/projects", label: "Projects & Apps", desc: "Built products", icon: Search, accent: accents.projects },
 ];
 
 const creativeTabs = [
-  { href: "/blog", label: "Writing Desk", icon: PenLine, accent: accents.blog },
-  { href: "/blog?category=poetry", label: "Poetry", icon: BookOpen, accent: accents.blog },
-  { href: "/blog?category=market", label: "Market Musings", icon: FileText, accent: accents.works },
+  { href: "/blog", label: "Writing Desk", desc: "Poetry and thoughts", icon: PenLine, accent: accents.blog },
+  { href: "/blog?category=poetry", label: "Poetry", desc: "Creative writing", icon: BookOpen, accent: accents.blog },
+  { href: "/blog?category=market", label: "Market Musings", desc: "Finance notes", icon: FileText, accent: accents.works },
 ];
 
 const storageKey = "anshul-portfolio-v3";
@@ -53,6 +53,7 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [profileImage, setProfileImage] = useState("");
+  const [collegeImage, setCollegeImage] = useState("");
   const [cvName, setCvName] = useState("");
   const [documentNames, setDocumentNames] = useState<string[]>([]);
   const [instagram, setInstagram] = useState(profile.instagram);
@@ -61,20 +62,22 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
   const [rewriteLoading, setRewriteLoading] = useState(false);
   const tabs = mode === "creative" ? creativeTabs : professionalTabs;
   const activeTab = professionalTabs.find((tab) => pathname === tab.href) ?? professionalTabs[0];
+  const activeAccent = activeTab.accent;
 
   useEffect(() => {
     const saved = window.localStorage.getItem(storageKey);
     if (!saved) return;
     const parsed = JSON.parse(saved);
     setProfileImage(parsed.profileImage ?? "");
+    setCollegeImage(parsed.collegeImage ?? "");
     setCvName(parsed.cvName ?? "");
     setDocumentNames(parsed.documentNames ?? []);
     setInstagram(parsed.instagram ?? "");
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(storageKey, JSON.stringify({ profileImage, cvName, documentNames, instagram }));
-  }, [profileImage, cvName, documentNames, instagram]);
+    window.localStorage.setItem(storageKey, JSON.stringify({ profileImage, collegeImage, cvName, documentNames, instagram }));
+  }, [profileImage, collegeImage, cvName, documentNames, instagram]);
 
   const resumeText = useMemo(
     () =>
@@ -87,6 +90,14 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => setProfileImage(String(reader.result));
+    reader.readAsDataURL(file);
+  };
+
+  const handleCollegeImage = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setCollegeImage(String(reader.result));
     reader.readAsDataURL(file);
   };
 
@@ -111,7 +122,7 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
       const data = await response.json();
       setRewriteOutput(data.output ?? data.error ?? "No rewrite output received.");
     } catch {
-      setRewriteOutput("AI rewrite failed. Check that ANTHROPIC_API_KEY is configured.");
+      setRewriteOutput("Gemini rewrite failed. Check that GEMINI_API_KEY is configured.");
     }
     setRewriteLoading(false);
   };
@@ -128,7 +139,13 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
 
   return (
     <main className="min-h-screen bg-white text-slate-900">
-      <header className="border-b border-slate-200 bg-white">
+      <header
+        className="border-b border-slate-200 bg-white"
+        style={{
+          background:
+            "radial-gradient(circle at 8% 18%, rgba(37,99,235,0.12), transparent 28rem), radial-gradient(circle at 92% 12%, rgba(217,119,6,0.12), transparent 26rem), #ffffff",
+        }}
+      >
         <div className="mx-auto flex max-w-7xl flex-col gap-7 px-5 py-8 md:px-10 lg:flex-row lg:items-center lg:justify-between">
           <motion.div
             className="flex flex-col gap-6 md:flex-row md:items-center"
@@ -157,7 +174,7 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
                 <Menu size={14} /> Portfolio Menu
               </button>
               <h1 className="font-display text-4xl font-black tracking-tight text-slate-950 md:text-6xl">{profile.name}</h1>
-              <p className="mt-2 max-w-3xl text-base font-semibold text-blue-700 md:text-lg">{profile.tagline}</p>
+              <p className="mt-2 max-w-3xl text-base font-semibold md:text-lg" style={{ color: activeAccent }}>{profile.tagline}</p>
               <p className="mt-2 max-w-2xl text-sm italic leading-7 text-slate-500">{profile.heroLine}</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Social href={profile.linkedin} icon={<Linkedin size={14} />} label="LinkedIn" color="#0A66C2" />
@@ -171,7 +188,7 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
             </div>
           </motion.div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 lg:max-w-xs">
+          <div className="rounded-3xl border border-slate-200 bg-white/85 p-5 text-sm text-slate-600 shadow-soft backdrop-blur lg:max-w-xs">
             <p className="font-bold text-slate-900">Contact</p>
             <p className="mt-2">{profile.email}</p>
             <p>{profile.alternateEmail}</p>
@@ -179,11 +196,24 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
             <p>{profile.location}</p>
           </div>
         </div>
+        <div className="mx-auto grid max-w-7xl gap-3 px-5 pb-7 md:grid-cols-4 md:px-10">
+          {[
+            ["3", "Research Papers", "#2563EB"],
+            ["6", "Financial Models", "#D97706"],
+            ["35", "Months Experience", "#16A34A"],
+            ["500+", "Students Mentored", "#DC2626"],
+          ].map(([value, label, color]) => (
+            <div key={label} className="rounded-2xl border bg-white/90 p-4 shadow-sm backdrop-blur" style={{ borderColor: `${color}22` }}>
+              <strong className="block text-2xl font-black" style={{ color }}>{value}</strong>
+              <span className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{label}</span>
+            </div>
+          ))}
+        </div>
       </header>
 
-      <div className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-3 md:px-10 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex w-full overflow-x-auto">
+      <div className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 md:px-10">
+          <div className="portfolio-tabs-grid">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const active = pathname === tab.href || (pathname === "/" && tab.href === "/about");
@@ -191,20 +221,35 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
                 <Link
                   key={tab.href + tab.label}
                   href={tab.href}
-                  className="group relative mr-2 inline-flex min-w-fit items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition hover:bg-slate-50"
-                  style={{ color: active ? tab.accent : "#64748B", "--tab-accent": tab.accent } as CSSProperties}
+                  className="group relative overflow-hidden rounded-2xl border p-3 text-left transition duration-200 hover:-translate-y-1 hover:shadow-lift"
+                  style={
+                    {
+                      color: active ? "#ffffff" : tab.accent,
+                      background: active
+                        ? `linear-gradient(135deg, ${tab.accent}, ${shade(tab.accent, -26)})`
+                        : `linear-gradient(135deg, ${withAlpha(tab.accent, 0.12)}, #ffffff)`,
+                      borderColor: active ? "transparent" : withAlpha(tab.accent, 0.22),
+                      "--tab-accent": tab.accent,
+                    } as CSSProperties
+                  }
                 >
-                  <span className="rounded-lg border border-slate-200 bg-white p-2 transition group-hover:-translate-y-0.5" style={{ color: tab.accent }}>
-                    <Icon size={16} />
+                  <span className="absolute -right-6 -top-8 h-24 w-24 rounded-full bg-white/20 transition group-hover:scale-125" />
+                  <span className="relative flex items-center gap-3">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white shadow-sm" style={{ color: tab.accent }}>
+                      <Icon size={19} />
+                    </span>
+                    <span className="min-w-0">
+                      <strong className="block text-sm font-black leading-tight">{tab.label}</strong>
+                      <small className={`mt-1 block text-[11px] font-bold leading-tight ${active ? "text-white/75" : "text-slate-500"}`}>{tab.desc}</small>
+                    </span>
                   </span>
-                  {tab.label}
-                  {active && <motion.span layoutId="tab-underline" className="absolute inset-x-3 -bottom-3 h-1 rounded-full" style={{ background: tab.accent }} />}
+                  {active && <motion.span layoutId="tab-glow" className="absolute inset-x-4 bottom-0 h-1 rounded-t-full bg-white/80" />}
                 </Link>
               );
             })}
           </div>
 
-          <div className="flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+          <div className="flex w-fit rounded-2xl border border-slate-200 bg-slate-50 p-1">
             <button
               onClick={() => router.push("/about")}
               className={`rounded-lg px-3 py-2 text-xs font-black ${mode === "professional" ? "bg-white text-slate-950 shadow-sm" : "text-slate-500"}`}
@@ -228,7 +273,12 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
       >
-        {children}
+        <div
+          className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-soft md:p-6"
+          style={collegeImage ? ({ "--college-image": `url(${collegeImage})` } as CSSProperties) : undefined}
+        >
+          {children}
+        </div>
       </motion.section>
 
       {drawerOpen && <button aria-label="Close drawer" className="fixed inset-0 z-40 bg-slate-950/45" onClick={() => setDrawerOpen(false)} />}
@@ -250,6 +300,10 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
               <input type="file" accept="image/*" className="hidden" onChange={handleImage} />
             </label>
             <label className="drawer-action">
+              <ImagePlus size={18} /> Upload College Photo
+              <input type="file" accept="image/*" className="hidden" onChange={handleCollegeImage} />
+            </label>
+            <label className="drawer-action">
               <FileText size={18} /> Upload CV / Resume {cvName && <small>{cvName}</small>}
               <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleCv} />
             </label>
@@ -259,15 +313,15 @@ export function PortfolioShell({ children, mode = "professional" }: { children: 
             </label>
           </DrawerGroup>
 
-          <DrawerGroup title="Resume Rewriter">
+          <DrawerGroup title="Gemini Resume Rewriter">
             <textarea
               value={resumeInput}
               onChange={(event) => setResumeInput(event.target.value)}
               className="min-h-32 rounded-xl border border-white/10 bg-white/10 p-3 text-sm leading-7 text-white outline-none placeholder:text-white/35"
-              placeholder="Paste raw experience, bullet points, or CV text here."
+              placeholder="Paste raw experience, bullet points, or CV text here. Gemini will rewrite it into finance-recruiter-grade bullets."
             />
             <button onClick={rewriteResume} className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 py-3 text-sm font-black transition hover:bg-indigo-400">
-              <Sparkles size={16} /> {rewriteLoading ? "Rewriting..." : "Rewrite with AI"}
+              <Sparkles size={16} /> {rewriteLoading ? "Rewriting..." : "Rewrite with Gemini 2.5 Flash"}
             </button>
             {rewriteOutput && (
               <div className="rounded-xl border border-white/10 bg-white/10 p-3">
@@ -330,4 +384,21 @@ function DrawerGroup({ title, children }: { title: string; children: ReactNode }
       {children}
     </div>
   );
+}
+
+function withAlpha(hex: string, alpha: number) {
+  const clean = hex.replace("#", "");
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function shade(hex: string, percent: number) {
+  const clean = hex.replace("#", "");
+  const amount = Math.round(2.55 * percent);
+  const r = Math.max(0, Math.min(255, parseInt(clean.slice(0, 2), 16) + amount));
+  const g = Math.max(0, Math.min(255, parseInt(clean.slice(2, 4), 16) + amount));
+  const b = Math.max(0, Math.min(255, parseInt(clean.slice(4, 6), 16) + amount));
+  return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 }

@@ -13,7 +13,7 @@
   --amber: #d97706;
   --rose: #e11d48;
   --shadow: 0 24px 70px rgba(23, 37, 84, 0.12);
-  --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-display: var(--font-manrope), var(--font-inter), Inter, "Segoe UI", sans-serif;
   --font-body: var(--font-inter), Inter, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -32,6 +32,8 @@ body {
   font-family:
     var(--font-body);
   text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 button,
@@ -64,6 +66,81 @@ a {
 
 .drawer-action:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+.portfolio-tabs-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+@media (max-width: 1180px) {
+  .portfolio-tabs-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .portfolio-tabs-grid {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .portfolio-tabs-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+.portfolio-tabs-grid > a {
+    min-width: 220px;
+  }
+}
+
+.college-photo-panel {
+  min-height: 360px;
+  border-radius: 28px;
+  border: 1px solid rgba(124, 58, 237, 0.22);
+  overflow: hidden;
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.78), rgba(37, 99, 235, 0.54)),
+    var(--college-image, linear-gradient(135deg, #ede9fe, #eff6ff));
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 24px 80px rgba(124, 58, 237, 0.16);
+}
+
+.college-photo-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 12%, rgba(255, 255, 255, 0.42), transparent 15rem);
+}
+
+.college-photo-overlay {
+  position: absolute;
+  inset: auto 20px 20px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(16px);
+  color: white;
+  padding: 18px;
+}
+
+.college-photo-overlay p {
+  font-size: 28px;
+  font-weight: 900;
+  margin: 0;
+}
+
+.college-photo-overlay span {
+  color: rgba(255, 255, 255, 0.78);
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 4px;
 }
 
 .shell {
@@ -560,8 +637,7 @@ a {
 .vision-panel p {
   color: var(--muted);
   line-height: 1.82;
-  text-align: justify;
-  text-justify: inter-word;
+  text-wrap: pretty;
 }
 
 .contact-grid {
